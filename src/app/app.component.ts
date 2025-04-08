@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TranscriptionComponent } from "./transcription/transcription.component";
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [TranscriptionComponent],
+  template: `<app-transcription></app-transcription>`,
 })
-export class AppComponent {
-  title = 'medical-transcription-ui';
-}
+export class AppComponent {}

@@ -1,0 +1,26 @@
+  <div class="transcription-container">
+    <h2>🎤 Medical Audio Transcription</h2>
+  
+    <div class="button-group">
+      <button (click)="startRecording()" [disabled]="isRecording" class="btn start">
+        ▶️ Start Recording
+      </button>
+      <button (click)="stopRecording()" [disabled]="!isRecording" class="btn stop">
+        ⏹️ Stop & Transcribe
+      </button>
+    </div>
+  
+    <div *ngIf="isLoading" class="loading">
+      ⏳ Transcribing... Please wait.
+    </div>
+  
+    <div *ngIf="transcript" class="result">
+      <h3>📝 Transcript:</h3>
+      <textarea readonly class="transcript-box">{{ transcript }}</textarea>
+    </div>
+  
+    <div *ngIf="audioURL" class="playback">
+      <h3>🔊 Playback</h3>
+      <audio [src]="audioURL" controls></audio>
+    </div>
+  </div>
