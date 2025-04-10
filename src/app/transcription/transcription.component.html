@@ -9,10 +9,22 @@
         ⏹️ Stop & Transcribe
       </button>
     </div>
+
+    <!-- 📁 File Upload -->
+  <div class="file-upload">
+    <label for="audioFile" class="btn upload">📁 Upload Audio File</label>
+    <input
+      type="file"
+      id="audioFile"
+      (change)="onFileSelected($event)"
+      accept="audio/*"
+      hidden
+    />
+  </div>
   
     <div *ngIf="isLoading" class="loading">
       ⏳ Transcribing... Please wait.
-    </div>
+    </div>  
   
     <div *ngIf="transcript" class="result">
       <h3>📝 Transcript:</h3>

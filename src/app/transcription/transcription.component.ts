@@ -19,10 +19,39 @@ private mediaRecorder!: MediaRecorder;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.audioURL = URL.createObjectURL(file);
+      this.uploadAndTranscribe(file);
+    }
+  }
+
+  uploadAndTranscribe(file: File) {
+    this.isLoading = true;
+    const formData = new FormData();
+    formData.append('AudioFile', file);
+    // formData.append('transcript', ''); // optional if you still need to send this
+  
+    this.http.post<any>('https://localhost:44355/api/SOAPNote/transcribe-and-generate', formData,)
+      .subscribe({
+        next: (res) => {
+          debugger;
+          this.transcript = res.transcript; // adjust based on your API's return shape
+          this.isLoading = false;
+         // this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Upload failed', err);
+          this.isLoading = false;
+        }
+      });
+  }
   startRecording() {
     this.transcript = null;
     this.audioChunks = [];
-
+    this.isLoading = true;
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.start();
@@ -32,11 +61,11 @@ private mediaRecorder!: MediaRecorder;
         this.audioChunks.push(event.data);
       };
 
-      this.mediaRecorder.onstop = () => {
-        this.isLoading = true;
+      this.mediaRecorder.onstop = () => {       
         const audioBlob = new Blob(this.audioChunks, { type: 'audio/mp3' });
         this.audioURL = URL.createObjectURL(audioBlob);
         this.sendToBackend(audioBlob);
+     
       };
     }).catch(error => {
       console.error('Microphone access denied:', error);
@@ -51,15 +80,16 @@ private mediaRecorder!: MediaRecorder;
   }
 
   sendToBackend(blob: Blob) {
-   
+
+    this.isLoading = true;   
     const formData = new FormData();
     formData.append('AudioFile', blob, 'recorded_audio.mp3');
-
-    this.http.post<{transcript: string}>('https://localhost:44355/api/transcription/transcribe', formData)
+    // formData.append('transcript', ''); 
+    this.http.post<any>('https://localhost:44355/api/SOAPNote/transcribe-and-generate', formData)
     .subscribe({
       next: res => {
         debugger;
-        this.transcript = res.transcript;
+        this.transcript = res.transcript;    
         this.isLoading = false;
         this.cdr.detectChanges();
       },
